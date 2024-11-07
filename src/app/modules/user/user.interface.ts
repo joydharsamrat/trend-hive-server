@@ -3,6 +3,7 @@ export interface TUser {
   email: string;
   password: string;
   role: "user" | "admin";
+  isDeleted?: boolean;
 }
 
 export type TUserRole = "admin" | "user";

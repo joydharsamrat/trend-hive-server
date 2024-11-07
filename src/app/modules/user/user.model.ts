@@ -9,8 +9,7 @@ const userSchema = new Schema<TUser>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: 0 },
     role: { type: String, enum: ["user", "admin"], default: "user" },
-    phone: { type: String, required: true, unique: true },
-    address: { type: String, required: true },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -18,4 +18,11 @@ router.post(
   authControllers.handleUserLogin
 );
 
+router.post(
+  "/access-token",
+
+  validateRequest(authValidationSchemas.refreshTokenValidationSchema),
+  authControllers.handleGetAccessToken
+);
+
 export const authRoutes = router;

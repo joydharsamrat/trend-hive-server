@@ -6,9 +6,8 @@ const createUserValidationSchema = z.object({
     .string({ required_error: "Email is required" })
     .email({ message: "Email address must be valid !" }),
   password: z.string({ required_error: "Password is required" }),
-  phone: z.string({ required_error: "Phone is required" }),
   role: z.enum(["user", "admin"]).optional(),
-  address: z.string({ required_error: "Address is required" }),
+  isDeleted: z.boolean().optional(),
 });
 
 const updateUserValidationSchema = z.object({
@@ -18,9 +17,8 @@ const updateUserValidationSchema = z.object({
     .email({ message: "Email address must be valid !" })
     .optional(),
   password: z.string({ required_error: "Password is required" }).optional(),
-  phone: z.string({ required_error: "Phone is required" }).optional(),
   role: z.enum(["user", "admin"]).optional().optional(),
-  address: z.string({ required_error: "Address is required" }).optional(),
+  isDeleted: z.boolean().optional(),
 });
 export const userValidationSchemas = {
   createUserValidationSchema,

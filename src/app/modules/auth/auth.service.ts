@@ -6,6 +6,8 @@ import createToken from "./auth.utils";
 import config from "../../config";
 import { TUser } from "../user/user.interface";
 import AppError from "../../error/appError";
+import { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const userSignUp = async (payload: TUser) => {
   const result = await User.create(payload);
@@ -33,15 +35,49 @@ const loginUser = async (payload: TAuth) => {
     role: user.role,
   };
 
-  const token = createToken(
+  const accessToken = createToken(
     jwtPayload,
     config.jwt_access_token_secret as string,
-    "1d"
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_token_secret as string,
+    config.jwt_refresh_expires_in as string
   );
 
   user.password = "";
 
-  return { token, data: user };
+  return { accessToken, refreshToken, user };
 };
 
-export const authServices = { userSignUp, loginUser };
+const getAccessToken = async (token: string) => {
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_token_secret as string
+  ) as JwtPayload;
+
+  const user = await User.findOne(decoded.email);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found !");
+  } else if (user.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, "User is deleted !");
+  }
+
+  const jwtPayload = {
+    _id: user._id,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_token_secret as string,
+    config.jwt_access_expires_in as string
+  );
+
+  return { token: accessToken };
+};
+
+export const authServices = { userSignUp, loginUser, getAccessToken };
