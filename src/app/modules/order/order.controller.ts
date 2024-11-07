@@ -14,10 +14,16 @@ const handleInitiatePayment = catchAsync(async (req, res) => {
 });
 
 const handlePaymentSuccess = catchAsync(async (req, res) => {
-  const result = await orderServices.orderSuccess(req.body);
+  await orderServices.orderSuccess(req.body);
+  res.redirect("https://trend-hive-neon.vercel.app/user/success");
+});
+
+const handlePaymentFail = catchAsync(async (req, res) => {
+  res.redirect("https://trend-hive-neon.vercel.app/user/failed");
 });
 
 export const orderControllers = {
   handleInitiatePayment,
   handlePaymentSuccess,
+  handlePaymentFail,
 };
