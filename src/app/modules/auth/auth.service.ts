@@ -10,8 +10,28 @@ import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
 const userSignUp = async (payload: TUser) => {
-  const result = await User.create(payload);
-  return { data: result };
+  const user = await User.create(payload);
+
+  const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_token_secret as string,
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_token_secret as string,
+    config.jwt_refresh_expires_in as string
+  );
+
+  return { accessToken, refreshToken };
 };
 
 const loginUser = async (payload: TAuth) => {
@@ -31,6 +51,7 @@ const loginUser = async (payload: TAuth) => {
 
   const jwtPayload = {
     _id: user._id,
+    name: user.name,
     email: user.email,
     role: user.role,
   };
@@ -47,9 +68,7 @@ const loginUser = async (payload: TAuth) => {
     config.jwt_refresh_expires_in as string
   );
 
-  user.password = "";
-
-  return { accessToken, refreshToken, user };
+  return { accessToken, refreshToken };
 };
 
 const getAccessToken = async (token: string) => {

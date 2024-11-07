@@ -7,20 +7,35 @@ import config from "../../config";
 const handleUserSignUp = catchAsync(async (req, res) => {
   const result = await authServices.userSignUp(req.body);
 
+  const { refreshToken, accessToken } = result;
+
+  res.cookie("refreshToken", refreshToken, {
+    secure: config.node_ENV === "production",
+    httpOnly: true,
+  });
+  res.cookie("accessToken", accessToken, {
+    secure: config.node_ENV === "production",
+    httpOnly: true,
+  });
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User created successfully",
-    data: result,
+    data: { accessToken, refreshToken },
   });
 });
 
 const handleUserLogin = catchAsync(async (req, res) => {
   const result = await authServices.loginUser(req.body);
 
-  const { refreshToken, accessToken, user } = result;
+  const { refreshToken, accessToken } = result;
 
   res.cookie("refreshToken", refreshToken, {
+    secure: config.node_ENV === "production",
+    httpOnly: true,
+  });
+  res.cookie("accessToken", accessToken, {
     secure: config.node_ENV === "production",
     httpOnly: true,
   });
@@ -29,7 +44,7 @@ const handleUserLogin = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "User logged in successfully",
-    data: { accessToken, user },
+    data: { accessToken, refreshToken },
   });
 });
 
