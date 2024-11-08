@@ -1,7 +1,10 @@
+import httpStatus from "http-status";
+import AppError from "../../error/appError";
 import { TProduct } from "./product.interface";
 import { Product } from "./product.model";
 
 const createProduct = async (payload: TProduct) => {
+  console.log(payload);
   const result = await Product.create(payload);
   return result;
 };
@@ -53,40 +56,66 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     sort = query.sort;
   }
 
-  const sortQuery = searchQuery.sort({ price: sort });
+  const sortQuery = searchQuery
+    .find({ isDeleted: { $ne: true } })
+    .sort({ price: sort });
 
   // pagination
 
   const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 8;
+  const limit = Number(query.limit) || 0;
   const skip = (page - 1) * limit;
 
-  const result = await sortQuery.limit(limit).skip(skip);
+  const result = await sortQuery.limit(limit).skip(skip).populate("category");
 
   return result;
 };
 
 const getProductById = async (id: string) => {
-  const result = await Product.findById(id).populate("category");
+  const result = await Product.findById(id);
   return result;
 };
 
-const getProductStock = async (ids: string[]) => {
-  const products = await Product.find({ _id: { $in: ids } }).select(
-    "_id quantity"
+const updateProduct = async (id: string, payload: Partial<TProduct>) => {
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new AppError(httpStatus.FORBIDDEN, "Data not found");
+  } else if (product.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, "Product is deleted");
+  }
+
+  const result = await Product.findByIdAndUpdate(
+    id,
+    { $set: { ...payload } },
+    { new: true }
   );
-  const stockData: { [key: string]: number } = {};
 
-  products.forEach((product) => {
-    stockData[product._id.toString()] = product.quantity;
-  });
+  return { data: result };
+};
 
-  return stockData;
+const deleteProduct = async (id: string) => {
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new AppError(httpStatus.FORBIDDEN, "Data not found");
+  } else if (product.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, "Product is deleted");
+  }
+
+  const result = await Product.findByIdAndUpdate(
+    id,
+    { $set: { isDeleted: true } },
+    { upsert: true, new: true }
+  );
+
+  return { data: result };
 };
 
 export const productServices = {
   createProduct,
   getAllProducts,
   getProductById,
-  getProductStock,
+  updateProduct,
+  deleteProduct,
 };

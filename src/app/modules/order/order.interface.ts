@@ -13,6 +13,7 @@ export type Product = {
   _id: Types.ObjectId;
   name: string;
   image: string;
+  quantity: number;
 };
 
 export type CartItem = {
@@ -26,4 +27,5 @@ export type TOrder = {
   items: CartItem[];
   price: number;
   user: Types.ObjectId;
+  status?: "pending" | "delivered" | "canceled";
 };

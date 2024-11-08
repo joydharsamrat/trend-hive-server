@@ -112,7 +112,13 @@ const orderSuccess = async (payload: Record<string, unknown>) => {
   }
 };
 
+const getOrdersForUser = async (id: string) => {
+  const result = await Order.find({ user: id }).sort("-createdAt");
+  return result;
+};
+
 export const orderServices = {
   createOrder,
   orderSuccess,
+  getOrdersForUser,
 };

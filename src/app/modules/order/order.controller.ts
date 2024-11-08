@@ -22,8 +22,21 @@ const handlePaymentFail = catchAsync(async (req, res) => {
   res.redirect("https://trend-hive-neon.vercel.app/user/failed");
 });
 
+const handleGetOrdersForUser = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+
+  const result = await orderServices.getOrdersForUser(_id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Orders retrieved successfully",
+    data: result,
+  });
+});
+
 export const orderControllers = {
   handleInitiatePayment,
   handlePaymentSuccess,
   handlePaymentFail,
+  handleGetOrdersForUser,
 };

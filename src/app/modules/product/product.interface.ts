@@ -7,4 +7,5 @@ export type TProduct = {
   description: string;
   image: string;
   category: Types.ObjectId;
+  isDeleted: boolean;
 };

@@ -36,13 +36,28 @@ const handleGetProductById = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const handleGetProductStock = catchAsync(async (req, res) => {
-  const result = await productServices.getProductStock(req.body);
+const handleUpdateProduct = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await productServices.updateProduct(id, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Products stock retrieved successfully",
+    message: "Product updated successfully",
+    data: result,
+  });
+});
+
+const handleDeleteProduct = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await productServices.deleteProduct(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Product deleted successfully",
     data: result,
   });
 });
@@ -51,5 +66,6 @@ export const productControllers = {
   handleCreateProduct,
   handleGetAllProducts,
   handleGetProductById,
-  handleGetProductStock,
+  handleUpdateProduct,
+  handleDeleteProduct,
 };

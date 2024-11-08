@@ -12,9 +12,13 @@ router.post(
 );
 
 router.get("/", productControllers.handleGetAllProducts);
-// router.get("/featured", productControllers.handleGetFeaturedProducts);
 router.get("/:id", productControllers.handleGetProductById);
 
-router.post("/stock", productControllers.handleGetProductStock);
+router.put("/:id", productControllers.handleUpdateProduct);
+router.delete(
+  "/:id",
+
+  productControllers.handleDeleteProduct
+);
 
 export const productRoutes = router;
