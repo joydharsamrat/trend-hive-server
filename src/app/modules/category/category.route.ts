@@ -14,5 +14,12 @@ router.post(
 );
 
 router.get("/", categoryControllers.handleGetAllCategories);
+router.put(
+  "/:id",
+
+  auth("admin"),
+  validateRequest(categoryValidationSchemas.categoryUpdateValidationSchema),
+  categoryControllers.updateCategory
+);
 
 export const categoryRoutes = router;

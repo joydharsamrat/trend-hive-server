@@ -10,4 +10,10 @@ router.put("/make-admin", auth("admin"), userControllers.handleMakeAdmin);
 
 router.delete("/", auth("admin"), userControllers.handleDeleteUser);
 
+router.post(
+  "/create-user/admin",
+  auth("admin"),
+  userControllers.handleCreateUser
+);
+
 export const userRoutes = router;

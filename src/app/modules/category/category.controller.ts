@@ -24,7 +24,22 @@ const handleGetAllCategories = catchAsync(async (req, res) => {
   });
 });
 
+const updateCategory = catchAsync(async (req, res) => {
+  const result = await categoryServices.updateCategories(
+    req.params.id,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Categories retrieved successfully",
+    data: result,
+  });
+});
+
 export const categoryControllers = {
   handleCreateCategory,
   handleGetAllCategories,
+  updateCategory,
 };

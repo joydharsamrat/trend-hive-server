@@ -18,4 +18,11 @@ router.post("/fail", orderControllers.handlePaymentFail);
 
 router.get("/user", auth("user"), orderControllers.handleGetOrdersForUser);
 
+router.get("/admin", auth("admin"), orderControllers.handleGetAllOrders);
+router.put(
+  "/status/admin/:id",
+  auth("admin"),
+  orderControllers.handleUpdateOrderStatus
+);
+
 export const orderRoutes = router;

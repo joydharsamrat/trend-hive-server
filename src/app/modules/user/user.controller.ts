@@ -35,9 +35,19 @@ const handleDeleteUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const handleCreateUser = catchAsync(async (req, res) => {
+  const result = await userServices.createUser(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: " User created successfully",
+    data: result,
+  });
+});
 
 export const userControllers = {
   handleGetUsers,
   handleMakeAdmin,
   handleDeleteUser,
+  handleCreateUser,
 };

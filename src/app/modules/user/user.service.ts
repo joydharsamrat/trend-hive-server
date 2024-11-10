@@ -1,3 +1,4 @@
+import { TUser } from "./user.interface";
 import { User } from "./user.model";
 
 const getUsers = async () => {
@@ -17,8 +18,14 @@ const deleteUser = async (id: string) => {
   return { data: result };
 };
 
+const createUser = async (payload: TUser) => {
+  const result = await User.create(payload);
+  return { data: result };
+};
+
 export const userServices = {
   getUsers,
   makeAdmin,
   deleteUser,
+  createUser,
 };

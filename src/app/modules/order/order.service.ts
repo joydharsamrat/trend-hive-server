@@ -16,22 +16,20 @@ const createOrder = async (payload: TOrder) => {
     signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
     tran_id,
     amount: price,
-    currency: "USD",
+    currency: "BDT",
     desc: "Test Payment",
     cus_name: billingInfo.name,
     cus_email: billingInfo.email,
     cus_phone: billingInfo.phone,
     success_url: "https://trend-hive-server.vercel.app/api/v1/order/success",
     fail_url: "https://trend-hive-server.vercel.app/api/v1/order/fail",
-    cancel_url: "https://trend-hive-neon.vercel.app/",
+    cancel_url: "https://trend-hive-neon.vercel.app/user/checkout",
     type: "json",
     opt_a: user,
     opt_b: billingInfo.address,
     opt_c: billingInfo.city,
     opt_d: billingInfo.state,
   };
-
-  console.log(paymentData);
 
   try {
     const response = await fetch("https://sandbox.aamarpay.com/jsonpost.php", {
@@ -48,8 +46,8 @@ const createOrder = async (payload: TOrder) => {
 
     const data = await response.json();
     return { data };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Error in payment API:", error);
     throw new AppError(
       httpStatus.BAD_REQUEST,
       "Failed to initiate payment slot"
@@ -117,8 +115,20 @@ const getOrdersForUser = async (id: string) => {
   return result;
 };
 
+const getAllOrders = async () => {
+  const result = await Order.find().sort("-createdAt");
+  return result;
+};
+
+const updateOrderStatus = async (id: string, status: string) => {
+  const result = await Order.findByIdAndUpdate(id, { status }, { new: true });
+  return result;
+};
+
 export const orderServices = {
   createOrder,
   orderSuccess,
   getOrdersForUser,
+  getAllOrders,
+  updateOrderStatus,
 };
