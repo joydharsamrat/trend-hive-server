@@ -12,12 +12,12 @@ const handleUserSignUp = catchAsync(async (req, res) => {
   res.cookie("refreshToken", refreshToken, {
     secure: config.node_ENV === "production",
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.node_ENV === "production" ? "none" : "lax",
   });
   res.cookie("accessToken", accessToken, {
     secure: config.node_ENV === "production",
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.node_ENV === "production" ? "none" : "lax",
   });
 
   sendResponse(res, {
@@ -36,12 +36,12 @@ const handleUserLogin = catchAsync(async (req, res) => {
   res.cookie("refreshToken", refreshToken, {
     secure: config.node_ENV === "production",
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.node_ENV === "production" ? "none" : "lax",
   });
   res.cookie("accessToken", accessToken, {
     secure: config.node_ENV === "production",
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.node_ENV === "production" ? "none" : "lax",
   });
 
   sendResponse(res, {

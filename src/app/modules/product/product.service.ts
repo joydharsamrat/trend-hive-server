@@ -9,7 +9,6 @@ const createProduct = async (payload: TProduct) => {
 };
 
 const getAllProducts = async (query: Record<string, unknown>) => {
-  // search
   let searchTerm = "";
 
   if (query.searchTerm) {
@@ -19,6 +18,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   const searchQuery = Product.find({
     name: { $regex: searchTerm, $options: "i" },
   });
+
   const excFields = [
     "searchTerm",
     "minPrice",
@@ -31,14 +31,11 @@ const getAllProducts = async (query: Record<string, unknown>) => {
 
   excFields.forEach((el) => delete queryObj[el]);
 
-  // filtering based on prise range
   if (query.minPrice && query.maxPrice) {
     searchQuery.find({
       price: { $gte: Number(query.minPrice), $lte: Number(query.maxPrice) },
     });
   }
-
-  // categories filtering
 
   if (query.categories) {
     const categories: string[] = (query.categories as string).split(",");
@@ -46,8 +43,6 @@ const getAllProducts = async (query: Record<string, unknown>) => {
       category: { $in: [...categories] },
     });
   }
-
-  // sorting
 
   let sort: "asc" | "desc" = "desc";
 
@@ -59,15 +54,20 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     .find({ isDeleted: { $ne: true } })
     .sort({ price: sort });
 
-  // pagination
-
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 0;
   const skip = (page - 1) * limit;
 
-  const result = await sortQuery.limit(limit).skip(skip).populate("category");
+  // Total count of matching products
+  const totalProducts = await sortQuery.clone().countDocuments();
 
-  return result;
+  // Fetch products with pagination
+  const products = await sortQuery.limit(limit).skip(skip).populate("category");
+
+  return {
+    totalProducts,
+    products,
+  };
 };
 
 const getProductById = async (id: string) => {
